@@ -1,15 +1,28 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 3500;
 const path = require("path");
-const { logger } = require("./middleware/logger");
+const { logger, logEvents } = require("./middleware/logger");
 const errorHandler = require("./middleware/errorHandler");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
 
+//database connnection func'
+const getconn = require("./config/dbConn");
+
 //importing routes
 const RootRoute = require("./routes/Root.Route");
+
+// Initialize the connection and obtain the connection object
+const db = getconn();
+
+// Handle database connection events
+db.on("error", (err) => {
+  console.error("MongoDB connection error:", err);
+});
+
 app.use(logger);
 app.use(cors(corsOptions));
 app.use(cookieParser());
@@ -30,6 +43,17 @@ app.all("*", (req, res) => {
 
 app.use(errorHandler);
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+db.once("open", () => {
+  console.log("Connected to MongoDB");
+  app.listen(port, () => {
+    console.log(`Listening on port ${port}`);
+  });
+});
+
+db.on("error", (error) => {
+  console.error("MongoDB connection error:", error);
+  logEvents(
+    `${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`,
+    "mongoErrLog.log"
+  );
 });
