@@ -13,7 +13,8 @@ const corsOptions = require("./config/corsOptions");
 const getconn = require("./config/dbConn");
 
 //importing routes
-const RootRoute = require("./routes/Root.Route");
+const rootRoute = require("./routes/Root.Route");
+const userRoute = require("./routes/userRoute");
 
 // Initialize the connection and obtain the connection object
 const db = getconn();
@@ -28,7 +29,8 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(express.json());
 app.use("/", express.static(path.join(__dirname, "public")));
-app.use("/", RootRoute);
+app.use("/", rootRoute);
+app.use("/user", userRoute);
 
 app.all("*", (req, res) => {
   res.status(404);
