@@ -14,7 +14,8 @@ const getconn = require("./config/dbConn");
 
 //importing routes
 const rootRoute = require("./routes/Root.Route");
-const userRoute = require("./routes/userRoute");
+const userRoute = require("./routes/User.Route");
+const noteRoute = require("./routes/Note.Route");
 
 // Initialize the connection and obtain the connection object
 const db = getconn();
@@ -31,6 +32,7 @@ app.use(express.json());
 app.use("/", express.static(path.join(__dirname, "public")));
 app.use("/", rootRoute);
 app.use("/user", userRoute);
+app.use("/note", noteRoute);
 
 app.all("*", (req, res) => {
   res.status(404);
